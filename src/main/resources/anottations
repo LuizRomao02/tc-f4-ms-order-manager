@@ -1,0 +1,7 @@
+Customer    (1)  -----------    (N) Order
+Order       (1)  -----------    (N) OrderItem
+OrderItem   (N) --------        (1) Product
+Order       (1)  -----------    (1) Payment
+Payment     (1) --------        (1) PaymentStatus
+Order       (1)  -----------    (N) OrderTracking
+Order       (1)  -----------    (1) OrderStatus
