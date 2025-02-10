@@ -1,4 +1,4 @@
-package com.java.fiap.ordermanager.config.openfeign;
+package com.java.fiap.ordermanager.domain.gateway;
 
 import com.java.fiap.ordermanager.domain.dto.CustomerDTO;
 import org.springframework.cloud.openfeign.FeignClient;

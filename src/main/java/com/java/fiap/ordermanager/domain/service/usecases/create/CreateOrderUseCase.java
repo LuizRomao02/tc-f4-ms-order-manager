@@ -1,10 +1,10 @@
 package com.java.fiap.ordermanager.domain.service.usecases.create;
 
-import com.java.fiap.ordermanager.config.openfeign.MsCostumerClient;
 import com.java.fiap.ordermanager.domain.dto.CustomerDTO;
 import com.java.fiap.ordermanager.domain.entity.Order;
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
 import com.java.fiap.ordermanager.domain.exception.order.CreateOrderUseCaseException;
+import com.java.fiap.ordermanager.domain.gateway.MsCostumerClient;
 import com.java.fiap.ordermanager.domain.service.usecases.UseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
