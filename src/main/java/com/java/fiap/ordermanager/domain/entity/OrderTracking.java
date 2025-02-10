@@ -1,28 +1,22 @@
 package com.java.fiap.ordermanager.domain.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@Data
+@Getter
+@Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class OrderTracking {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private UUID id;
+public class OrderTracking extends BaseEntity {
 
   @ManyToOne
   @JoinColumn(name = "order_id")
-  private Order order;
+  private Orders order;
 
   private Double latitude;
 
   private Double longitude;
-
-  private LocalDateTime timestamp;
 }

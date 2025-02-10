@@ -2,18 +2,15 @@ package com.java.fiap.ordermanager.domain.service.impl;
 
 import com.java.fiap.ordermanager.domain.dto.OrderTrackingDTO;
 import com.java.fiap.ordermanager.domain.dto.form.OrderTrackingForm;
-import com.java.fiap.ordermanager.domain.entity.Order;
+import com.java.fiap.ordermanager.domain.entity.Orders;
 import com.java.fiap.ordermanager.domain.entity.OrderTracking;
 import com.java.fiap.ordermanager.domain.exception.tracking.ServicesOrderTrackingException;
 import com.java.fiap.ordermanager.domain.mappers.ConverterToOrFromDTO;
 import com.java.fiap.ordermanager.domain.repository.OrderTrackingRepository;
-import com.java.fiap.ordermanager.domain.service.OrderService;
 import com.java.fiap.ordermanager.domain.service.OrderTrackingService;
 import com.java.fiap.ordermanager.domain.service.usecases.create.CreateOrderTrackingUseCase;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,21 +20,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderTrackingServiceImpl implements OrderTrackingService {
 
   private final OrderTrackingRepository orderTrackingRepository;
-  private final OrderService orderService;
   private final CreateOrderTrackingUseCase createOrderTrackingUseCase;
   private final ConverterToOrFromDTO converterToOrFromDTO;
 
   @Transactional
   @Override
-  public OrderTracking addTracking(UUID orderId, OrderTrackingForm trackingForm) {
-    Order order = orderService.getOneOrderById(orderId);
-
+  public OrderTracking addTracking(Orders order, OrderTrackingForm trackingForm) {
     OrderTracking orderTracking =
         OrderTracking.builder()
             .order(order)
             .latitude(trackingForm.latitude())
             .longitude(trackingForm.longitude())
-            .timestamp(LocalDateTime.now())
             .build();
 
     return orderTrackingRepository.save(createOrderTrackingUseCase.execute(orderTracking));
@@ -47,7 +40,7 @@ public class OrderTrackingServiceImpl implements OrderTrackingService {
   public List<OrderTrackingDTO> getTrackingByOrderId(UUID orderId) {
     return orderTrackingRepository.findByOrderId(orderId).stream()
         .map(converterToOrFromDTO::convertToDTO)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Transactional

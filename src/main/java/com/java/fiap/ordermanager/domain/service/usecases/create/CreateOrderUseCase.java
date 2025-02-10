@@ -1,7 +1,7 @@
 package com.java.fiap.ordermanager.domain.service.usecases.create;
 
 import com.java.fiap.ordermanager.domain.dto.CustomerDTO;
-import com.java.fiap.ordermanager.domain.entity.Order;
+import com.java.fiap.ordermanager.domain.entity.Orders;
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
 import com.java.fiap.ordermanager.domain.exception.order.CreateOrderUseCaseException;
 import com.java.fiap.ordermanager.domain.gateway.MsCostumerClient;
@@ -12,12 +12,12 @@ import org.springframework.util.ObjectUtils;
 
 @Service
 @RequiredArgsConstructor
-public class CreateOrderUseCase implements UseCase<Order, Order> {
+public class CreateOrderUseCase implements UseCase<Orders, Orders> {
 
   private final MsCostumerClient msCostumerClient;
 
   @Override
-  public Order execute(Order input) {
+  public Orders execute(Orders input) {
 
     if (ObjectUtils.isEmpty(input.getCustomerId())) {
       throw new CreateOrderUseCaseException("Customer cannot be empty");

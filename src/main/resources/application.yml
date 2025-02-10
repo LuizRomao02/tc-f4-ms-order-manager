@@ -1,0 +1,72 @@
+app:
+  name: tc-f4-ms-order-manager
+
+server:
+  port: 8085
+  max-http-request-header-size: 30000
+
+
+spring:
+  cloud:
+    config:
+      enabled: false
+    stream:
+      bindings:
+        orderCreatedOutput:
+          destination: orders.created.queue
+          content-type: application/json
+          producer:
+            useNativeEncoding: true
+      rabbit:
+        binder:
+          addresses: amqp://localhost
+          username: admin
+          password: rabbit
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
+  mvc:
+    hidden method:
+      filter:
+        enabled: true
+  datasource:
+    hikari.connectionTimeout: 20000
+    hikari.maximumPoolSize: 50
+    url: jdbc:mysql://127.0.0.1:3306/ordermanagerdb?createDatabaseIfNotExist=true
+    username: root
+    password: root
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL8InnoDBDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        '[format_sql]': true
+        integration:
+          envers:
+            enabled: true
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 30000
+        readTimeout: 90000
+        loggerLevel: basic
+  httpclient:
+    disableSslValidation: true
+    enabled: false
+  okhttp:
+    enabled: true
+
+springdoc:
+  api-docs:
+    enabled: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka

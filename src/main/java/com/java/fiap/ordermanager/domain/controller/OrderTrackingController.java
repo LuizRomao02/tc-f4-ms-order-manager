@@ -2,6 +2,7 @@ package com.java.fiap.ordermanager.domain.controller;
 
 import com.java.fiap.ordermanager.domain.dto.OrderTrackingDTO;
 import com.java.fiap.ordermanager.domain.dto.form.OrderTrackingForm;
+import com.java.fiap.ordermanager.domain.service.OrderService;
 import com.java.fiap.ordermanager.domain.service.OrderTrackingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -9,7 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +18,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/order_tracking")
 @Tag(name = "Order Tracking", description = "APIs for managing order tracking")
-@RequiredArgsConstructor
 public class OrderTrackingController {
 
   private final OrderTrackingService orderTrackingService;
+  private final OrderService orderService;
+
+  @Autowired
+  public OrderTrackingController(
+      OrderTrackingService orderTrackingService, OrderService orderService) {
+    this.orderTrackingService = orderTrackingService;
+    this.orderService = orderService;
+  }
 
   @PostMapping(value = "/{orderId}")
   @Operation(
@@ -35,7 +43,8 @@ public class OrderTrackingController {
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(
             orderTrackingService.converterDTO(
-                orderTrackingService.addTracking(orderId, trackingForm)));
+                orderTrackingService.addTracking(
+                    orderService.getOneOrderById(orderId), trackingForm)));
   }
 
   @GetMapping(value = "/{orderId}")

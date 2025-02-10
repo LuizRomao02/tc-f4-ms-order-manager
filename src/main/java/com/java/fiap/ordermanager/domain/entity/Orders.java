@@ -3,19 +3,16 @@ package com.java.fiap.ordermanager.domain.entity;
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
 import jakarta.persistence.*;
 import java.util.List;
-import java.util.UUID;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@Data
+@Getter
+@Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Order {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private UUID id;
+public class Orders extends BaseEntity {
 
   private String customerId;
 

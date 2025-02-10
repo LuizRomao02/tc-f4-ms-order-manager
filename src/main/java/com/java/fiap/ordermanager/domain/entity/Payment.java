@@ -2,23 +2,20 @@ package com.java.fiap.ordermanager.domain.entity;
 
 import com.java.fiap.ordermanager.domain.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
-import java.util.UUID;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@Data
+@Getter
+@Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Payment {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private UUID id;
+public class Payment extends BaseEntity {
 
   @OneToOne
   @JoinColumn(name = "order_id")
-  private Order order;
+  private Orders order;
 
   private Double amount;
 
