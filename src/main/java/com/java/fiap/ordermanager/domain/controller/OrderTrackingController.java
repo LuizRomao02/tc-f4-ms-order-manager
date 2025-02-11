@@ -1,13 +1,12 @@
 package com.java.fiap.ordermanager.domain.controller;
 
 import com.java.fiap.ordermanager.domain.dto.OrderTrackingDTO;
-import com.java.fiap.ordermanager.domain.dto.form.OrderTrackingForm;
 import com.java.fiap.ordermanager.domain.service.OrderService;
 import com.java.fiap.ordermanager.domain.service.OrderTrackingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +38,9 @@ public class OrderTrackingController {
   @ApiResponse(responseCode = "404", description = "Order not found")
   @ApiResponse(responseCode = "409", description = "Cannot track a DELIVERED or CANCELED order")
   public ResponseEntity<OrderTrackingDTO> addTracking(
-      @PathVariable UUID orderId, @Valid @RequestBody OrderTrackingForm trackingForm) {
+      @PathVariable UUID orderId, HttpServletRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED)
-        .body(
-            orderTrackingService.addTracking(orderService.getOneOrderById(orderId), trackingForm));
+        .body(orderTrackingService.addTracking(orderService.getOneOrderById(orderId), request));
   }
 
   @GetMapping(value = "/{orderId}")

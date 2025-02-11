@@ -1,6 +1,5 @@
 package com.java.fiap.ordermanager.domain.service.usecases.create;
 
-import com.java.fiap.ordermanager.domain.dto.CustomerDTO;
 import com.java.fiap.ordermanager.domain.dto.form.OrderForm;
 import com.java.fiap.ordermanager.domain.entity.Orders;
 import com.java.fiap.ordermanager.domain.exception.order.CreateOrderUseCaseException;
@@ -22,11 +21,11 @@ public class CreateOrderUseCase implements UseCase<OrderForm, Orders> {
   public Orders execute(OrderForm input) {
     validationInput(input);
 
-    CustomerDTO customerDTO = msCostumerClient.getCustomerById(input.customerId());
+    /*CustomerDTO customerDTO = msCostumerClient.getCustomerById(input.customerId());
 
     if (customerDTO == null) {
       throw new CreateOrderUseCaseException("Customer not found");
-    }
+    }*/
 
     return orderMapper.toEntity(input);
   }
@@ -40,9 +39,6 @@ public class CreateOrderUseCase implements UseCase<OrderForm, Orders> {
     }
     if (ObjectUtils.isEmpty(input.payment())) {
       throw new CreateOrderUseCaseException("Payment cannot be empty");
-    }
-    if (input.tracking() != null && input.tracking().isEmpty()) {
-      throw new CreateOrderUseCaseException("Tracking cannot be empty");
     }
   }
 }

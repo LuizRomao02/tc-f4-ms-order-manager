@@ -2,6 +2,7 @@ package com.java.fiap.ordermanager.domain.service.impl;
 
 import com.java.fiap.ordermanager.domain.dto.IpApiResponse;
 import com.java.fiap.ordermanager.domain.dto.LocationDTO;
+import com.java.fiap.ordermanager.domain.exception.tracking.CreateOrderTrackingUseCaseException;
 import com.java.fiap.ordermanager.domain.service.GeolocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +45,7 @@ public class GeolocationServiceImpl implements GeolocationService {
         }
       }
     } catch (Exception e) {
-      throw new RuntimeException("Erro ao obter dados de geolocalização", e);
+      throw new CreateOrderTrackingUseCaseException("Error obtaining geolocation data");
     }
     return null;
   }
