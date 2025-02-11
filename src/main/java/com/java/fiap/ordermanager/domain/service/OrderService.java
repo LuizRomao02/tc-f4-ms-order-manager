@@ -20,5 +20,5 @@ public interface OrderService {
 
   OrderDTO updateOrderStatus(UUID id, OrderStatus status, OrderTrackingForm trackingForm);
 
-  OrderDTO deleteOrder(UUID id);
+  void deleteOrder(UUID id);
 }

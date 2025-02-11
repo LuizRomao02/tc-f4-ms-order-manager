@@ -60,7 +60,8 @@ public class OrderController {
 
   @DeleteMapping("/{id}")
   @Operation(summary = "Delete an order", description = "Delete an order by its ID")
-  public ResponseEntity<OrderDTO> deleteOrder(@PathVariable UUID id) {
-    return ResponseEntity.ok(orderService.deleteOrder(id));
+  public ResponseEntity<Void> deleteOrder(@PathVariable UUID id) {
+    orderService.deleteOrder(id);
+    return ResponseEntity.noContent().build();
   }
 }

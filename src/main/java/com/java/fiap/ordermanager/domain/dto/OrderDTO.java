@@ -9,12 +9,12 @@ import lombok.Data;
 @Data
 public class OrderDTO {
 
-    private UUID id;
-    private String customerId;
-    private List<OrderItemDTO> orderItems;
-    private PaymentDTO payment;
-    private OrderStatus status;
-    private List<OrderTrackingDTO> tracking;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+  private UUID id;
+  private String customerId;
+  private List<OrderItemDTO> items;
+  private PaymentDTO payment;
+  private OrderStatus status;
+  private List<OrderTrackingDTO> tracking;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 }

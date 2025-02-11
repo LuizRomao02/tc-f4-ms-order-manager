@@ -4,10 +4,9 @@ import com.java.fiap.ordermanager.domain.dto.OrderDTO;
 import com.java.fiap.ordermanager.domain.dto.OrderItemDTO;
 import com.java.fiap.ordermanager.domain.dto.OrderTrackingDTO;
 import com.java.fiap.ordermanager.domain.dto.PaymentDTO;
-import com.java.fiap.ordermanager.domain.dto.form.OrderForm;
-import com.java.fiap.ordermanager.domain.entity.Orders;
 import com.java.fiap.ordermanager.domain.entity.OrderItem;
 import com.java.fiap.ordermanager.domain.entity.OrderTracking;
+import com.java.fiap.ordermanager.domain.entity.Orders;
 import com.java.fiap.ordermanager.domain.entity.Payment;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +24,6 @@ public class ConverterToOrFromDTO {
 
   public OrderDTO convertToDTO(Orders order) {
     return modelMapper.map(order, OrderDTO.class);
-  }
-
-  public Orders convertToEntity(OrderForm dto) {
-    return modelMapper.map(dto, Orders.class);
   }
 
   public OrderTrackingDTO convertToDTO(OrderTracking orderTracking) {

@@ -63,6 +63,8 @@ feign:
     enabled: true
 
 springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
   api-docs:
     enabled: true
 
