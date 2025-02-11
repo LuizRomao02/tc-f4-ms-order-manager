@@ -72,3 +72,6 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka
+
+api-geolocation:
+  url: http://ip-api.com/json/
