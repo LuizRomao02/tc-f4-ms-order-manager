@@ -1,20 +1,23 @@
 package com.java.fiap.ordermanager.domain.service.impl;
 
+import com.java.fiap.ordermanager.config.mq.OrderEvent;
 import com.java.fiap.ordermanager.config.mq.OrderProducer;
 import com.java.fiap.ordermanager.domain.dto.OrderDTO;
+import com.java.fiap.ordermanager.domain.dto.OrderItemDTO;
+import com.java.fiap.ordermanager.domain.dto.PaymentDTO;
 import com.java.fiap.ordermanager.domain.dto.form.OrderForm;
 import com.java.fiap.ordermanager.domain.dto.form.OrderTrackingForm;
-import com.java.fiap.ordermanager.domain.entity.OrderTracking;
 import com.java.fiap.ordermanager.domain.entity.Orders;
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
 import com.java.fiap.ordermanager.domain.exception.order.ServicesOrderException;
-import com.java.fiap.ordermanager.domain.mappers.ConverterToOrFromDTO;
+import com.java.fiap.ordermanager.domain.mappers.ConverterToDTO;
 import com.java.fiap.ordermanager.domain.repository.OrderRepository;
 import com.java.fiap.ordermanager.domain.service.OrderService;
 import com.java.fiap.ordermanager.domain.service.OrderTrackingService;
 import com.java.fiap.ordermanager.domain.service.usecases.create.CreateOrderUseCase;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,18 +29,18 @@ public class OrderServiceImpl implements OrderService {
   private final OrderRepository orderRepository;
   private final OrderTrackingService orderTracking;
   private final CreateOrderUseCase createOrderUseCase;
-  private final ConverterToOrFromDTO converterToOrFromDTO;
+  private final ConverterToDTO converterToDTO;
 
   private final OrderProducer orderProducer;
 
   @Override
   public List<OrderDTO> getAllOrders() {
-    return orderRepository.findAll().stream().map(converterToOrFromDTO::convertToDTO).toList();
+    return orderRepository.findAll().stream().map(converterToDTO::convertToDTO).toList();
   }
 
   @Override
   public OrderDTO getOrderById(UUID id) {
-    return converterToOrFromDTO.convertToDTO(getOneOrderById(id));
+    return converterToDTO.convertToDTO(getOneOrderById(id));
   }
 
   @Override
@@ -46,22 +49,19 @@ public class OrderServiceImpl implements OrderService {
     Orders newOrder = createOrderUseCase.execute(orderForm);
     Orders orderSaved = orderRepository.save(newOrder);
 
-    /*List<OrderItemDTO> orderItemDTOS = orderSaved.getItems().stream()
-        .map(converterToOrFromDTO::convertToDTO)
-        .collect(Collectors.toList());
+    List<OrderItemDTO> orderItemDTOS =
+        orderSaved.getItems().stream()
+            .map(converterToDTO::convertToDTO)
+            .collect(Collectors.toList());
 
-    PaymentDTO paymentDTO = converterToOrFromDTO.convertToDTO(orderSaved.getPayment());
+    PaymentDTO paymentDTO = converterToDTO.convertToDTO(orderSaved.getPayment());
 
-    OrderEvent orderEvent = new OrderEvent(
-        orderSaved.getId(),
-        orderSaved.getCreatedAt(),
-        orderItemDTOS,
-        paymentDTO
-    );
+    OrderEvent orderEvent =
+        new OrderEvent(orderSaved.getId(), orderSaved.getCreatedAt(), orderItemDTOS, paymentDTO);
 
-    orderProducer.sendOrderCreatedEvent(orderEvent);*/
+    orderProducer.sendOrderCreatedEvent(orderEvent);
 
-    return converterToOrFromDTO.convertToDTO(orderSaved);
+    return converterToDTO.convertToDTO(orderSaved);
   }
 
   @Override
@@ -78,13 +78,10 @@ public class OrderServiceImpl implements OrderService {
     orderRepository.save(order);
 
     if (newStatus == OrderStatus.SHIPPED) {
-      OrderTracking tracking = orderTracking.addTracking(order, trackingForm);
-      order.getTracking().add(tracking);
-
-      orderRepository.save(order);
+      orderTracking.addTracking(order, trackingForm);
     }
 
-    return converterToOrFromDTO.convertToDTO(order);
+    return converterToDTO.convertToDTO(order);
   }
 
   @Override

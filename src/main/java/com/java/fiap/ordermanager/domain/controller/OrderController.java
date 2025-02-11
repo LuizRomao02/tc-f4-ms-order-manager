@@ -14,8 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/orders")
-@Tag(name = "Orders", description = "Endpoints for managing orders")
+@RequestMapping("/order")
+@Tag(name = "Order", description = "Endpoints for managing orders")
 public class OrderController {
 
   private final OrderService orderService;

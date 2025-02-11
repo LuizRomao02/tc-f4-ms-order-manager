@@ -2,10 +2,11 @@ package com.java.fiap.ordermanager.domain.service.impl;
 
 import com.java.fiap.ordermanager.domain.dto.OrderTrackingDTO;
 import com.java.fiap.ordermanager.domain.dto.form.OrderTrackingForm;
-import com.java.fiap.ordermanager.domain.entity.Orders;
 import com.java.fiap.ordermanager.domain.entity.OrderTracking;
+import com.java.fiap.ordermanager.domain.entity.Orders;
 import com.java.fiap.ordermanager.domain.exception.tracking.ServicesOrderTrackingException;
-import com.java.fiap.ordermanager.domain.mappers.ConverterToOrFromDTO;
+import com.java.fiap.ordermanager.domain.mappers.ConverterToDTO;
+import com.java.fiap.ordermanager.domain.mappers.OrderTrackingMapper;
 import com.java.fiap.ordermanager.domain.repository.OrderTrackingRepository;
 import com.java.fiap.ordermanager.domain.service.OrderTrackingService;
 import com.java.fiap.ordermanager.domain.service.usecases.create.CreateOrderTrackingUseCase;
@@ -21,25 +22,23 @@ public class OrderTrackingServiceImpl implements OrderTrackingService {
 
   private final OrderTrackingRepository orderTrackingRepository;
   private final CreateOrderTrackingUseCase createOrderTrackingUseCase;
-  private final ConverterToOrFromDTO converterToOrFromDTO;
+  private final ConverterToDTO converterToDTO;
+  private final OrderTrackingMapper orderTrackingMapper;
 
   @Transactional
   @Override
-  public OrderTracking addTracking(Orders order, OrderTrackingForm trackingForm) {
-    OrderTracking orderTracking =
-        OrderTracking.builder()
-            .order(order)
-            .latitude(trackingForm.latitude())
-            .longitude(trackingForm.longitude())
-            .build();
+  public OrderTrackingDTO addTracking(Orders order, OrderTrackingForm trackingForm) {
+    OrderTracking orderTracking = orderTrackingMapper.toEntity(trackingForm, order);
+    OrderTracking savedTracking =
+        orderTrackingRepository.save(createOrderTrackingUseCase.execute(orderTracking));
 
-    return orderTrackingRepository.save(createOrderTrackingUseCase.execute(orderTracking));
+    return converterToDTO.convertToDTO(savedTracking);
   }
 
   @Override
   public List<OrderTrackingDTO> getTrackingByOrderId(UUID orderId) {
     return orderTrackingRepository.findByOrderId(orderId).stream()
-        .map(converterToOrFromDTO::convertToDTO)
+        .map(converterToDTO::convertToDTO)
         .toList();
   }
 
@@ -57,10 +56,5 @@ public class OrderTrackingServiceImpl implements OrderTrackingService {
     }
 
     orderTrackingRepository.deleteById(trackingId);
-  }
-
-  @Override
-  public OrderTrackingDTO converterDTO(OrderTracking orderTracking) {
-    return converterToOrFromDTO.convertToDTO(orderTracking);
   }
 }

@@ -42,9 +42,7 @@ public class OrderTrackingController {
       @PathVariable UUID orderId, @Valid @RequestBody OrderTrackingForm trackingForm) {
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(
-            orderTrackingService.converterDTO(
-                orderTrackingService.addTracking(
-                    orderService.getOneOrderById(orderId), trackingForm)));
+            orderTrackingService.addTracking(orderService.getOneOrderById(orderId), trackingForm));
   }
 
   @GetMapping(value = "/{orderId}")
@@ -55,6 +53,11 @@ public class OrderTrackingController {
   @ApiResponse(responseCode = "404", description = "Order not found")
   public ResponseEntity<List<OrderTrackingDTO>> getTrackingByOrderId(@PathVariable UUID orderId) {
     List<OrderTrackingDTO> trackingList = orderTrackingService.getTrackingByOrderId(orderId);
+
+    if (trackingList.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
     return ResponseEntity.ok(trackingList);
   }
 

@@ -13,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConverterToOrFromDTO {
+public class ConverterToDTO {
 
   private final ModelMapper modelMapper;
 
   @Autowired
-  public ConverterToOrFromDTO(ModelMapper modelMapper) {
+  public ConverterToDTO(ModelMapper modelMapper) {
     this.modelMapper = modelMapper;
   }
 
