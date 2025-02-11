@@ -1,7 +1,7 @@
 package com.java.fiap.ordermanager.domain.service.usecases.create;
 
 import com.java.fiap.ordermanager.domain.entity.OrderTracking;
-import com.java.fiap.ordermanager.domain.exception.order.CreateOrderTrackingUseCaseException;
+import com.java.fiap.ordermanager.domain.exception.tracking.CreateOrderTrackingUseCaseException;
 import com.java.fiap.ordermanager.domain.service.usecases.UseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

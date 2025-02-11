@@ -2,11 +2,11 @@ package com.java.fiap.ordermanager.domain.controller;
 
 import com.java.fiap.ordermanager.domain.dto.OrderDTO;
 import com.java.fiap.ordermanager.domain.dto.form.OrderForm;
-import com.java.fiap.ordermanager.domain.dto.form.OrderTrackingForm;
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
 import com.java.fiap.ordermanager.domain.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,10 +52,8 @@ public class OrderController {
       summary = "Update order status",
       description = "Update the status of an order by its ID")
   public ResponseEntity<OrderDTO> updateOrderStatus(
-      @PathVariable UUID id,
-      @RequestParam OrderStatus newStatus,
-      @RequestBody OrderTrackingForm trackingForm) {
-    return ResponseEntity.ok(orderService.updateOrderStatus(id, newStatus, trackingForm));
+      @PathVariable UUID id, @RequestParam OrderStatus newStatus, HttpServletRequest request) {
+    return ResponseEntity.ok(orderService.updateOrderStatus(id, newStatus, request));
   }
 
   @DeleteMapping("/{id}")

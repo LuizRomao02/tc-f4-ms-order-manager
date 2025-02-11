@@ -1,7 +1,6 @@
 package com.java.fiap.ordermanager.domain.service.impl;
 
 import com.java.fiap.ordermanager.domain.dto.OrderTrackingDTO;
-import com.java.fiap.ordermanager.domain.dto.form.OrderTrackingForm;
 import com.java.fiap.ordermanager.domain.entity.OrderTracking;
 import com.java.fiap.ordermanager.domain.entity.Orders;
 import com.java.fiap.ordermanager.domain.exception.tracking.ServicesOrderTrackingException;
@@ -10,6 +9,7 @@ import com.java.fiap.ordermanager.domain.mappers.OrderTrackingMapper;
 import com.java.fiap.ordermanager.domain.repository.OrderTrackingRepository;
 import com.java.fiap.ordermanager.domain.service.OrderTrackingService;
 import com.java.fiap.ordermanager.domain.service.usecases.create.CreateOrderTrackingUseCase;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +27,11 @@ public class OrderTrackingServiceImpl implements OrderTrackingService {
 
   @Transactional
   @Override
-  public OrderTrackingDTO addTracking(Orders order, OrderTrackingForm trackingForm) {
-    OrderTracking orderTracking = orderTrackingMapper.toEntity(trackingForm, order);
-    OrderTracking savedTracking =
-        orderTrackingRepository.save(createOrderTrackingUseCase.execute(orderTracking));
+  public OrderTrackingDTO addTracking(Orders order, HttpServletRequest request) {
+    OrderTracking orderTracking = orderTrackingMapper.toEntity(request, order);
 
-    return converterToDTO.convertToDTO(savedTracking);
+    return converterToDTO.convertToDTO(
+        orderTrackingRepository.save(createOrderTrackingUseCase.execute(orderTracking)));
   }
 
   @Override

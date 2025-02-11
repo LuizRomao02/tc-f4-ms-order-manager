@@ -4,9 +4,9 @@ import com.java.fiap.ordermanager.config.mq.OrderEvent;
 import com.java.fiap.ordermanager.config.mq.OrderProducer;
 import com.java.fiap.ordermanager.domain.dto.OrderDTO;
 import com.java.fiap.ordermanager.domain.dto.OrderItemDTO;
+import com.java.fiap.ordermanager.domain.dto.OrderTrackingDTO;
 import com.java.fiap.ordermanager.domain.dto.PaymentDTO;
 import com.java.fiap.ordermanager.domain.dto.form.OrderForm;
-import com.java.fiap.ordermanager.domain.dto.form.OrderTrackingForm;
 import com.java.fiap.ordermanager.domain.entity.Orders;
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
 import com.java.fiap.ordermanager.domain.exception.order.ServicesOrderException;
@@ -15,6 +15,7 @@ import com.java.fiap.ordermanager.domain.repository.OrderRepository;
 import com.java.fiap.ordermanager.domain.service.OrderService;
 import com.java.fiap.ordermanager.domain.service.OrderTrackingService;
 import com.java.fiap.ordermanager.domain.service.usecases.create.CreateOrderUseCase;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,7 +31,6 @@ public class OrderServiceImpl implements OrderService {
   private final OrderTrackingService orderTracking;
   private final CreateOrderUseCase createOrderUseCase;
   private final ConverterToDTO converterToDTO;
-
   private final OrderProducer orderProducer;
 
   @Override
@@ -66,9 +66,13 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   @Transactional
-  public OrderDTO updateOrderStatus(
-      UUID id, OrderStatus newStatus, OrderTrackingForm trackingForm) {
+  public OrderDTO updateOrderStatus(UUID id, OrderStatus newStatus, HttpServletRequest request) {
     Orders order = getOneOrderById(id);
+
+    if (order.getStatus().equals(newStatus)) {
+      throw new ServicesOrderException(
+          "Cannot change order status to " + newStatus + ". Action not allowed.");
+    }
 
     if (order.getStatus() == OrderStatus.DELIVERED || order.getStatus() == OrderStatus.CANCELED) {
       throw new ServicesOrderException("Cannot change status of a DELIVERED or CANCELED order.");
@@ -77,11 +81,14 @@ public class OrderServiceImpl implements OrderService {
     order.setStatus(newStatus);
     orderRepository.save(order);
 
+    OrderDTO orderDTO = converterToDTO.convertToDTO(order);
+
     if (newStatus == OrderStatus.SHIPPED) {
-      orderTracking.addTracking(order, trackingForm);
+      OrderTrackingDTO trackingDTO = orderTracking.addTracking(order, request);
+      orderDTO.setTracking(List.of(trackingDTO));
     }
 
-    return converterToDTO.convertToDTO(order);
+    return orderDTO;
   }
 
   @Override
