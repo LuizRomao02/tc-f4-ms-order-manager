@@ -26,6 +26,8 @@
         <java.version>17</java.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
         <modelmapper.version>2.4.4</modelmapper.version>
+        <!-- <sonar.host.url>http://localhost:9000</sonar.host.url>
+        <sonar.login>sqa_1ad29d431f936897fab06b5110b2944218cadcee</sonar.login> -->
     </properties>
 
     <dependencies>
@@ -176,6 +178,11 @@
                         </exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>4.0.0.4121</version>
             </plugin>
         </plugins>
     </build>
