@@ -14,6 +14,8 @@ public interface OrderService {
 
   OrderDTO getOrderById(UUID id);
 
+  Boolean getOpenOrdersByCustomerId(String customerId);
+
   Orders getOneOrderById(UUID id);
 
   OrderDTO createOrder(OrderForm order);

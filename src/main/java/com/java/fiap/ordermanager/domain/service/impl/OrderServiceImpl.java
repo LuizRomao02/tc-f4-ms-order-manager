@@ -44,6 +44,11 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
+  public Boolean getOpenOrdersByCustomerId(String customerId) {
+    return orderRepository.existsByCustomerIdAndStatus(customerId, OrderStatus.OPEN);
+  }
+
+  @Override
   @Transactional
   public OrderDTO createOrder(OrderForm orderForm) {
     Orders newOrder = createOrderUseCase.execute(orderForm);

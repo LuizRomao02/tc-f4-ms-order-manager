@@ -39,6 +39,14 @@ public class OrderController {
     return ResponseEntity.ok(orderService.getOrderById(id));
   }
 
+  @GetMapping("/open_orders/{customerId}")
+  @Operation(
+      summary = "Get an open order by Customer ID",
+      description = "Retrieve an open order by its unique identifier")
+  public ResponseEntity<Boolean> getOpenOrdersByCustomerId(@PathVariable String customerId) {
+    return ResponseEntity.ok(orderService.getOpenOrdersByCustomerId(customerId));
+  }
+
   @PostMapping
   @Operation(
       summary = "Create a new order",
