@@ -1,5 +1,6 @@
 package com.java.fiap.ordermanager.domain.service.impl;
 
+import com.java.fiap.ordermanager.domain.dto.AddressDTO;
 import com.java.fiap.ordermanager.domain.dto.OrderDTO;
 import com.java.fiap.ordermanager.domain.dto.OrderTrackingDTO;
 import com.java.fiap.ordermanager.domain.dto.form.OrderForm;
@@ -9,6 +10,7 @@ import com.java.fiap.ordermanager.domain.entity.Payment;
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
 import com.java.fiap.ordermanager.domain.entity.enums.PaymentStatus;
 import com.java.fiap.ordermanager.domain.exception.order.ServicesOrderException;
+import com.java.fiap.ordermanager.domain.gateway.MsCostumerClient;
 import com.java.fiap.ordermanager.domain.gateway.mq.GenericObjectMQ;
 import com.java.fiap.ordermanager.domain.gateway.mq.OrderEvent;
 import com.java.fiap.ordermanager.domain.mappers.ConverterToDTO;
@@ -37,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
   private final CreateOrderUseCase createOrderUseCase;
   private final ConverterToDTO converterToDTO;
   private final RabbitTemplate rabbitTemplate;
+  private final MsCostumerClient msCostumerClient;
 
   @Override
   public List<OrderDTO> getAllOrders() {
@@ -114,17 +117,17 @@ public class OrderServiceImpl implements OrderService {
     payment.setPaymentMethod(paymentForm.paymentMethod());
 
     if (payment.getStatus() == PaymentStatus.PAID) {
+      AddressDTO address = msCostumerClient.getAddressCustomerById(order.getCustomerId());
+
       OrderEvent eventMq =
           OrderEvent.builder()
               .status(1)
               .orderNumber(order.getId())
-              .address("Teste")
-              .houseNumber(12)
-              .postalCode("11111-111")
+              .address(address.getStreet() + ", " + address.getNeighborhood())
+              .houseNumber(address.getNumber())
+              .postalCode(address.getZipCode())
               .estimatedDeliveryDate(order.getEstimatedDeliveryDate())
               .build();
-
-      // pegar info do ms customer
 
       sendToQueueLogistics(eventMq);
     }

@@ -16,7 +16,7 @@ public class OrderEvent {
   private int status;
   private UUID orderNumber;
   private String address;
-  private int houseNumber;
+  private String houseNumber;
   private String postalCode;
   private LocalDate estimatedDeliveryDate;
 }
