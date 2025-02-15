@@ -114,7 +114,15 @@ public class OrderServiceImpl implements OrderService {
     payment.setPaymentMethod(paymentForm.paymentMethod());
 
     if (payment.getStatus() == PaymentStatus.PAID) {
-      OrderEvent eventMq = OrderEvent.builder().build();
+      OrderEvent eventMq =
+          OrderEvent.builder()
+              .status(1)
+              .orderNumber(order.getId())
+              .address("Teste")
+              .houseNumber(12)
+              .postalCode("11111-111")
+              .estimatedDeliveryDate(order.getEstimatedDeliveryDate())
+              .build();
 
       // pegar info do ms customer
 

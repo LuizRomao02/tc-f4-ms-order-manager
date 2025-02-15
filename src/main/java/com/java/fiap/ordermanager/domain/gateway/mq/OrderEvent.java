@@ -1,6 +1,7 @@
 package com.java.fiap.ordermanager.domain.gateway.mq;
 
 import java.time.LocalDate;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class OrderEvent {
 
   private int status;
-  private Long orderNumber;
+  private UUID orderNumber;
   private String address;
   private int houseNumber;
   private String postalCode;

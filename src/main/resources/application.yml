@@ -11,9 +11,9 @@ spring:
     config:
       enabled: false
   rabbitmq:
-    host: localhost
-    username: admin
-    password: rabbit
+    host: 46.202.177.185
+    username: tech4
+    password: tech4Fiap25
     port: 5672
     virtual-host: /
     listener:

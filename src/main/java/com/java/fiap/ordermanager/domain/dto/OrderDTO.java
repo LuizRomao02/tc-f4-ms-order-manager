@@ -2,6 +2,7 @@ package com.java.fiap.ordermanager.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,8 @@ public class OrderDTO {
   private PaymentDTO payment;
   private OrderStatus status;
   private List<OrderTrackingDTO> tracking;
+  private LocalDate estimatedDeliveryDate;
+  private Boolean expressDelivery;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 }
