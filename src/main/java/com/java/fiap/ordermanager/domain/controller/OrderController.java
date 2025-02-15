@@ -2,6 +2,7 @@ package com.java.fiap.ordermanager.domain.controller;
 
 import com.java.fiap.ordermanager.domain.dto.OrderDTO;
 import com.java.fiap.ordermanager.domain.dto.form.OrderForm;
+import com.java.fiap.ordermanager.domain.dto.form.PaymentForm;
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
 import com.java.fiap.ordermanager.domain.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,6 +63,15 @@ public class OrderController {
   public ResponseEntity<OrderDTO> updateOrderStatus(
       @PathVariable UUID id, @RequestParam OrderStatus newStatus, HttpServletRequest request) {
     return ResponseEntity.ok(orderService.updateOrderStatus(id, newStatus, request));
+  }
+
+  @PostMapping("/{id}/payment")
+  @Operation(
+      summary = "Make a payment for an order",
+      description = "Process the payment for a specific order by its ID")
+  public ResponseEntity<OrderDTO> payOrder(
+      @PathVariable UUID id, @RequestBody PaymentForm paymentForm) {
+    return ResponseEntity.ok(orderService.payOrder(id, paymentForm));
   }
 
   @DeleteMapping("/{id}")

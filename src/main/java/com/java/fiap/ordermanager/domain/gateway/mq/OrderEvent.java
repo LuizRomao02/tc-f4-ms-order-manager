@@ -1,7 +1,6 @@
 package com.java.fiap.ordermanager.domain.gateway.mq;
 
-import com.java.fiap.ordermanager.domain.dto.OrderTrackingDTO;
-import java.util.List;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,5 +12,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class OrderEvent {
 
-  private List<OrderTrackingDTO> tracking;
+  private int status;
+  private Long orderNumber;
+  private String address;
+  private int houseNumber;
+  private String postalCode;
+  private LocalDate estimatedDeliveryDate;
 }

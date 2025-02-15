@@ -2,6 +2,7 @@ package com.java.fiap.ordermanager.domain.entity;
 
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -27,4 +28,6 @@ public class Orders extends BaseEntity {
 
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
   private List<OrderTracking> tracking;
+
+  private LocalDate estimatedDeliveryDate;
 }

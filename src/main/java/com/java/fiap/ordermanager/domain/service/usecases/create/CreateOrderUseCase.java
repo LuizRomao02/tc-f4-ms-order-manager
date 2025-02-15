@@ -52,6 +52,7 @@ public class CreateOrderUseCase implements UseCase<OrderForm, Orders> {
     } catch (Exception e) {
       throw new CreateOrderUseCaseException(e.getMessage());
     }
+
     return orderMapper.toEntity(input);
   }
 

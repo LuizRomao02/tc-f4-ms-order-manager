@@ -2,6 +2,7 @@ package com.java.fiap.ordermanager.domain.service;
 
 import com.java.fiap.ordermanager.domain.dto.OrderDTO;
 import com.java.fiap.ordermanager.domain.dto.form.OrderForm;
+import com.java.fiap.ordermanager.domain.dto.form.PaymentForm;
 import com.java.fiap.ordermanager.domain.entity.Orders;
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,4 +24,6 @@ public interface OrderService {
   OrderDTO updateOrderStatus(UUID id, OrderStatus status, HttpServletRequest request);
 
   void deleteOrder(UUID id);
+
+  OrderDTO payOrder(UUID id, PaymentForm paymentForm);
 }

@@ -1,15 +1,16 @@
 package com.java.fiap.ordermanager.domain.service.impl;
 
-import com.java.fiap.ordermanager.config.mq.OrderEvent;
-import com.java.fiap.ordermanager.config.mq.OrderProducer;
 import com.java.fiap.ordermanager.domain.dto.OrderDTO;
-import com.java.fiap.ordermanager.domain.dto.OrderItemDTO;
 import com.java.fiap.ordermanager.domain.dto.OrderTrackingDTO;
-import com.java.fiap.ordermanager.domain.dto.PaymentDTO;
 import com.java.fiap.ordermanager.domain.dto.form.OrderForm;
+import com.java.fiap.ordermanager.domain.dto.form.PaymentForm;
 import com.java.fiap.ordermanager.domain.entity.Orders;
+import com.java.fiap.ordermanager.domain.entity.Payment;
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
+import com.java.fiap.ordermanager.domain.entity.enums.PaymentStatus;
 import com.java.fiap.ordermanager.domain.exception.order.ServicesOrderException;
+import com.java.fiap.ordermanager.domain.gateway.mq.GenericObjectMQ;
+import com.java.fiap.ordermanager.domain.gateway.mq.OrderEvent;
 import com.java.fiap.ordermanager.domain.mappers.ConverterToDTO;
 import com.java.fiap.ordermanager.domain.repository.OrderRepository;
 import com.java.fiap.ordermanager.domain.service.OrderService;
@@ -18,8 +19,9 @@ import com.java.fiap.ordermanager.domain.service.usecases.create.CreateOrderUseC
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +29,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
+  @Value("${spring.rabbitmq.queue.ms-logistics}")
+  private String queueLogisticsOrder;
+
   private final OrderRepository orderRepository;
   private final OrderTrackingService orderTracking;
   private final CreateOrderUseCase createOrderUseCase;
   private final ConverterToDTO converterToDTO;
-  private final OrderProducer orderProducer;
+  private final RabbitTemplate rabbitTemplate;
 
   @Override
   public List<OrderDTO> getAllOrders() {
@@ -53,18 +58,6 @@ public class OrderServiceImpl implements OrderService {
   public OrderDTO createOrder(OrderForm orderForm) {
     Orders newOrder = createOrderUseCase.execute(orderForm);
     Orders orderSaved = orderRepository.save(newOrder);
-
-    List<OrderItemDTO> orderItemDTOS =
-        orderSaved.getItems().stream()
-            .map(converterToDTO::convertToDTO)
-            .collect(Collectors.toList());
-
-    PaymentDTO paymentDTO = converterToDTO.convertToDTO(orderSaved.getPayment());
-
-    OrderEvent orderEvent =
-        new OrderEvent(orderSaved.getId(), orderSaved.getCreatedAt(), orderItemDTOS, paymentDTO);
-
-    orderProducer.sendOrderCreatedEvent(orderEvent);
 
     return converterToDTO.convertToDTO(orderSaved);
   }
@@ -108,9 +101,37 @@ public class OrderServiceImpl implements OrderService {
     orderRepository.delete(order);
   }
 
+  @Override
+  public OrderDTO payOrder(UUID id, PaymentForm paymentForm) {
+    Orders order = getOneOrderById(id);
+    Payment payment = order.getPayment();
+
+    if (payment.getStatus() == PaymentStatus.PAID) {
+      throw new ServicesOrderException("Cannot pay an order. Order already has a payment.");
+    }
+
+    payment.setStatus(paymentForm.status());
+    payment.setPaymentMethod(paymentForm.paymentMethod());
+
+    if (payment.getStatus() == PaymentStatus.PAID) {
+      OrderEvent eventMq = OrderEvent.builder().build();
+
+      // pegar info do ms customer
+
+      sendToQueueLogistics(eventMq);
+    }
+
+    return converterToDTO.convertToDTO(orderRepository.save(order));
+  }
+
   public Orders getOneOrderById(UUID id) {
     return orderRepository
         .findById(id)
         .orElseThrow(() -> new ServicesOrderException("Not Found Order"));
+  }
+
+  private void sendToQueueLogistics(OrderEvent orderEvent) {
+    rabbitTemplate.convertAndSend(
+        queueLogisticsOrder, GenericObjectMQ.builder().object(orderEvent).build());
   }
 }

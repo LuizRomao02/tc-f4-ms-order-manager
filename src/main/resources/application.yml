@@ -10,18 +10,23 @@ spring:
   cloud:
     config:
       enabled: false
-    stream:
-      bindings:
-        orderCreatedOutput:
-          destination: orders.created.queue
-          content-type: application/json
-          producer:
-            useNativeEncoding: true
-      rabbit:
-        binder:
-          addresses: amqp://localhost
-          username: admin
-          password: rabbit
+  rabbitmq:
+    host: localhost
+    username: admin
+    password: rabbit
+    port: 5672
+    virtual-host: /
+    listener:
+      simple:
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 5s
+          multiplier: 2
+    queue:
+      ms-logistics: q-ms-logistics-order
+
   servlet:
     multipart:
       enabled: true
