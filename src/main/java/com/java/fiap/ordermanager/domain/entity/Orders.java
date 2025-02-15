@@ -30,4 +30,6 @@ public class Orders extends BaseEntity {
   private List<OrderTracking> tracking;
 
   private LocalDate estimatedDeliveryDate;
+
+  private Boolean expressDelivery;
 }
