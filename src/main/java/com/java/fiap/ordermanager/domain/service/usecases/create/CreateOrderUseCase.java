@@ -29,7 +29,6 @@ public class CreateOrderUseCase implements UseCase<OrderForm, Orders> {
     validationInput(input);
 
     try {
-      AddressDTO address = msCostumerClient.getAddressCustomerById(input.customerId());
       ResponseEntity<Void> customerResponse = msCostumerClient.getCustomerById(input.customerId());
 
       if (!customerResponse.getStatusCode().is2xxSuccessful()) {
