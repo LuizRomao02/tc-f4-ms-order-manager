@@ -196,4 +196,26 @@ class OrderControllerTest {
 
     verify(orderService, times(1)).deleteOrder(eq(orderId));
   }
+
+  @Test
+  void shouldReturnOrderWhenOrderIdExists() throws Exception {
+    when(orderService.getOrderById(orderId)).thenReturn(orderDTO);
+
+    mockMvc
+        .perform(get("/order/{id}", orderId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(orderId.toString()))
+        .andExpect(jsonPath("$.customerId").value("id-teste"))
+        .andExpect(jsonPath("$.status").value("OPEN"));
+  }
+
+  @Test
+  void shouldReturnTrueWhenCustomerHasOpenOrders() throws Exception {
+    when(orderService.getOpenOrdersByCustomerId(orderDTO.getCustomerId())).thenReturn(true);
+
+    mockMvc
+        .perform(get("/order/open_orders/{customerId}", orderDTO.getCustomerId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").value(true));
+  }
 }
