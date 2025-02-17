@@ -8,6 +8,7 @@ import com.java.fiap.ordermanager.domain.exception.tracking.OrderTrackingExcepti
 import com.java.fiap.ordermanager.domain.exception.tracking.ServicesOrderTrackingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -20,6 +21,8 @@ public class GlobalExceptionHandler {
     ServicesOrderException.class,
     ServicesOrderTrackingException.class,
     OrderTrackingException.class,
+    RuntimeException.class,
+    MethodArgumentNotValidException.class
   })
   public ResponseEntity<String> handleCustomExceptions(RuntimeException ex) {
     if (ex instanceof OrderException customException) {

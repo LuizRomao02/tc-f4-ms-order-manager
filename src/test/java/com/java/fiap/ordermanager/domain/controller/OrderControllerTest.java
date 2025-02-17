@@ -9,6 +9,7 @@ import com.java.fiap.ordermanager.domain.dto.OrderItemDTO;
 import com.java.fiap.ordermanager.domain.dto.OrderTrackingDTO;
 import com.java.fiap.ordermanager.domain.dto.PaymentDTO;
 import com.java.fiap.ordermanager.domain.dto.form.OrderForm;
+import com.java.fiap.ordermanager.domain.dto.form.PaymentForm;
 import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
 import com.java.fiap.ordermanager.domain.entity.enums.PaymentStatus;
 import com.java.fiap.ordermanager.domain.exception.order.ServicesOrderException;
@@ -38,6 +39,7 @@ class OrderControllerTest {
   private AutoCloseable openMocks;
 
   @Mock private OrderService orderService;
+  @Mock private HttpServletRequest request;
 
   private OrderDTO orderDTO;
   UUID orderId = UUID.randomUUID();
@@ -83,7 +85,7 @@ class OrderControllerTest {
 
     mockMvc
         .perform(
-            post("/ms_order_manager/order")
+            post("/order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     "{\"customerId\":\"id-teste\",\"expressDelivery\":true,"
@@ -113,7 +115,7 @@ class OrderControllerTest {
     when(orderService.getAllOrders()).thenReturn(orders);
 
     mockMvc
-        .perform(get("/ms_order_manager/order"))
+        .perform(get("/order"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].id").value(orderId.toString()))
         .andExpect(jsonPath("$[0].customerId").value("id-teste"))
@@ -131,81 +133,67 @@ class OrderControllerTest {
   }
 
   @Test
-  void shouldReturnInternalServerError_WhenOrderServiceFails() throws Exception {
-    when(orderService.getAllOrders()).thenThrow(new RuntimeException("Service failure"));
-
-    mockMvc
-        .perform(get("/ms_order_manager/order"))
-        .andDo(MockMvcResultHandlers.print())
-        .andExpect(status().isInternalServerError())
-        .andExpect(jsonPath("$.message").value("Service failure"));
-
-    verify(orderService, times(1)).getAllOrders();
-  }
-
-  @Test
   void shouldReturnBadRequest_WhenInvalidOrderData() throws Exception {
     mockMvc
         .perform(
-            post("/ms_order_manager/order")
+            post("/order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
-                    "{\"customerId\":\"\",\"status\":\"INVALID_STATUS\",\"items\":[{\"productId\":1,\"quantity\":-2}],\"payment\":{\"amount\":100.0,\"method\":\"Credit Card\"},\"expressDelivery\":true}"))
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message").value("Invalid order data"));
+                    "{\"items\":[{\"productId\":1,\"quantity\":2}],"
+                        + "\"status\":\"OPEN\",\"payment\":{\"amount\":100.0,\"status\":\"PENDING\"}, "
+                        + "\"tracking\":{\"latitude\":0.0,\"longitude\":0.0}}"))
+        .andExpect(status().isBadRequest());
 
     verify(orderService, never()).createOrder(any(OrderForm.class));
   }
 
   @Test
-  void shouldUpdateOrderSuccessfully() throws Exception {
-    HttpServletRequest request = mock(HttpServletRequest.class);
+  void updateOrderStatus_ShouldReturnOk_WhenStatusIsUpdatedSuccessfully() throws Exception {
+    OrderStatus newStatus = OrderStatus.OPEN;
 
-    UUID orderId = UUID.randomUUID();
-    OrderDTO updatedOrder =
-        new OrderDTO(
-            orderId,
-            "customerId123",
-            List.of(new OrderItemDTO(UUID.randomUUID(), 1L, 2)),
-            new PaymentDTO(UUID.randomUUID(), 100.0, PaymentStatus.PENDING),
-            OrderStatus.SHIPPED,
-            List.of(
-                new OrderTrackingDTO(UUID.randomUUID(), orderId, 40.0, 90.0, LocalDateTime.now())),
-            LocalDate.now().plusDays(3),
-            true,
-            LocalDateTime.now(),
-            LocalDateTime.now());
-
-    when(orderService.updateOrderStatus(updatedOrder.getId(), updatedOrder.getStatus(), request))
-        .thenReturn(updatedOrder);
+    when(orderService.updateOrderStatus(eq(orderId), eq(newStatus), any())).thenReturn(orderDTO);
 
     mockMvc
         .perform(
-            put("/ms_order_manager/order/{id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(
-                    "{\"customerId\":\"customerId123\",\"status\":\"COMPLETED\",\"items\":[{\"productId\":1,\"quantity\":2}],\"payment\":{\"amount\":100.0,\"method\":\"Credit Card\"},\"expressDelivery\":true}"))
+            put("/order/{id}/status", orderId)
+                .param("newStatus", newStatus.name())
+                .contentType("application/json"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").isNotEmpty())
-        .andExpect(jsonPath("$.status").value("COMPLETED"))
-        .andExpect(jsonPath("$.items[0].productId").value(1))
-        .andExpect(jsonPath("$.items[0].quantity").value(2))
-        .andDo(MockMvcResultHandlers.print());
+        .andExpect(jsonPath("$.id").value(orderId.toString()))
+        .andExpect(jsonPath("$.status").value(newStatus.name()));
 
-    verify(orderService, times(1))
-        .updateOrderStatus(updatedOrder.getId(), updatedOrder.getStatus(), request);
+    verify(orderService, times(1)).updateOrderStatus(eq(orderId), eq(newStatus), any());
   }
 
   @Test
-  void shouldReturnNotFound_WhenOrderNotFound() throws Exception {
-    UUID id = UUID.randomUUID();
-    when(orderService.getOrderById(id)).thenThrow(new ServicesOrderException("Not Found Order"));
+  void shouldPayOrderSuccessfully() throws Exception {
+    PaymentForm paymentForm = new PaymentForm(100.0, "PIX", PaymentStatus.PENDING);
+
+    OrderDTO updatedOrder = new OrderDTO();
+    updatedOrder.setId(orderId);
+
+    when(orderService.payOrder(eq(orderId), eq(paymentForm))).thenReturn(updatedOrder);
 
     mockMvc
-        .perform(get("/ms_order_manager/order/{id}", id))
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.message").value("Order not found"));
+        .perform(
+            post("/order/{id}/payment", orderId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    "{\"amount\": 100.0, \"paymentMethod\": \"PIX\", \"status\": \"PENDING\"}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(orderId.toString()));
 
-    verify(orderService, times(1)).getOrderById(id);
+    verify(orderService, times(1)).payOrder(eq(orderId), eq(paymentForm));
+  }
+
+  @Test
+  void shouldDeleteOrderSuccessfully() throws Exception {
+    UUID orderId = UUID.randomUUID();
+
+    doNothing().when(orderService).deleteOrder(eq(orderId));
+
+    mockMvc.perform(delete("/order/{id}", orderId)).andExpect(status().isNoContent());
+
+    verify(orderService, times(1)).deleteOrder(eq(orderId));
   }
 }

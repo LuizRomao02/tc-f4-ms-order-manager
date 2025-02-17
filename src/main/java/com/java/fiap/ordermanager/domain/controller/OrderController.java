@@ -8,6 +8,7 @@ import com.java.fiap.ordermanager.domain.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/ms_order_manager/order")
+@RequestMapping("/order")
 @Tag(name = "Order", description = "Endpoints for managing orders")
 public class OrderController {
 
@@ -52,7 +53,7 @@ public class OrderController {
   @Operation(
       summary = "Create a new order",
       description = "Create a new order with the provided details")
-  public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderForm orderForm) {
+  public ResponseEntity<OrderDTO> createOrder(@Valid @RequestBody OrderForm orderForm) {
     return ResponseEntity.ok(orderService.createOrder(orderForm));
   }
 
