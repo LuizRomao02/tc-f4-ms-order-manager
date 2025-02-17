@@ -62,7 +62,7 @@ class OrderControllerTest {
     orderDTO =
         new OrderDTO(
             orderId,
-            "id-teste",
+            1L,
             List.of(new OrderItemDTO(UUID.randomUUID(), 1L, 2)),
             new PaymentDTO(UUID.randomUUID(), 100.0, PaymentStatus.PENDING),
             OrderStatus.OPEN,
@@ -94,7 +94,7 @@ class OrderControllerTest {
                         + "\"tracking\":{\"latitude\":0.0,\"longitude\":0.0}}"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").isNotEmpty())
-        .andExpect(jsonPath("$.customerId").value("id-teste"))
+        .andExpect(jsonPath("$.customerId").value(1L))
         .andExpect(jsonPath("$.status").value("OPEN"))
         .andExpect(jsonPath("$.items[0].productId").value(1))
         .andExpect(jsonPath("$.items[0].quantity").value(2))
@@ -118,7 +118,7 @@ class OrderControllerTest {
         .perform(get("/order"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].id").value(orderId.toString()))
-        .andExpect(jsonPath("$[0].customerId").value("id-teste"))
+        .andExpect(jsonPath("$[0].customerId").value(1L))
         .andExpect(jsonPath("$[0].status").value("OPEN"))
         .andExpect(jsonPath("$[0].items[0].productId").value(1))
         .andExpect(jsonPath("$[0].items[0].quantity").value(2))
@@ -205,7 +205,7 @@ class OrderControllerTest {
         .perform(get("/order/{id}", orderId))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(orderId.toString()))
-        .andExpect(jsonPath("$.customerId").value("id-teste"))
+        .andExpect(jsonPath("$.customerId").value(1L))
         .andExpect(jsonPath("$.status").value("OPEN"));
   }
 

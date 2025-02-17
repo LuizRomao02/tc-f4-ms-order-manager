@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class OrderDTO {
 
   private UUID id;
-  private String customerId;
+  private Long customerId;
   private List<OrderItemDTO> items;
   private PaymentDTO payment;
   private OrderStatus status;

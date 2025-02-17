@@ -70,7 +70,7 @@ class OrderServiceImplTest {
 
     orderForm =
         new OrderForm(
-            "customer-id",
+            1L,
             true,
             OrderStatus.OPEN,
             List.of(new OrderItemForm(1L, 2)),
@@ -262,7 +262,7 @@ class OrderServiceImplTest {
 
     Orders order = new Orders();
     order.setId(orderId);
-    order.setCustomerId(UUID.randomUUID().toString());
+    order.setCustomerId(1L);
     order.setPayment(new Payment(order, 100.0, PaymentStatus.PENDING, "CREDIT_CARD"));
     order.setEstimatedDeliveryDate(LocalDate.now().plusDays(2));
 

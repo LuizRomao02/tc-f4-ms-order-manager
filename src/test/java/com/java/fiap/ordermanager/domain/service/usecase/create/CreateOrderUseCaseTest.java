@@ -39,7 +39,7 @@ class CreateOrderUseCaseTest {
   void setUp() {
     orderForm =
         new OrderForm(
-            "customer-id",
+            1L,
             true,
             OrderStatus.OPEN,
             List.of(new OrderItemForm(1L, 2)),
@@ -48,8 +48,7 @@ class CreateOrderUseCaseTest {
 
   @Test
   void shouldThrowExceptionWhenCustomerNotFound() {
-    when(msCostumerClient.getCustomerById(anyString()))
-        .thenReturn(ResponseEntity.notFound().build());
+    when(msCostumerClient.getCustomerById(anyLong())).thenReturn(ResponseEntity.notFound().build());
 
     CreateOrderUseCaseException exception =
         assertThrows(
@@ -63,7 +62,7 @@ class CreateOrderUseCaseTest {
 
   @Test
   void shouldThrowExceptionWhenStockUpdateFails() {
-    when(msCostumerClient.getCustomerById(anyString())).thenReturn(ResponseEntity.ok().build());
+    when(msCostumerClient.getCustomerById(anyLong())).thenReturn(ResponseEntity.ok().build());
     when(msProductCatalogClient.updateStock(any())).thenReturn(ResponseEntity.badRequest().build());
 
     CreateOrderUseCaseException exception =

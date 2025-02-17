@@ -25,7 +25,6 @@ spring:
       initialize-schema: always
     job:
       enabled: false
-  cloud:
-    function:
-      web:
-        path: /api
+
+server:
+  port: 8081

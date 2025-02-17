@@ -45,7 +45,7 @@ public class OrderController {
   @Operation(
       summary = "Get an open order by Customer ID",
       description = "Retrieve an open order by its unique identifier")
-  public ResponseEntity<Boolean> getOpenOrdersByCustomerId(@PathVariable String customerId) {
+  public ResponseEntity<Boolean> getOpenOrdersByCustomerId(@PathVariable Long customerId) {
     return ResponseEntity.ok(orderService.getOpenOrdersByCustomerId(customerId));
   }
 

@@ -52,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
-  public Boolean getOpenOrdersByCustomerId(String customerId) {
+  public Boolean getOpenOrdersByCustomerId(Long customerId) {
     return orderRepository.existsByCustomerIdAndStatus(customerId, OrderStatus.OPEN);
   }
 

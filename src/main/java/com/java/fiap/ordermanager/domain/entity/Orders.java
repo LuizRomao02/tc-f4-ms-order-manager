@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class Orders extends BaseEntity {
 
-  private String customerId;
+  private Long customerId;
 
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
   private List<OrderItem> items;

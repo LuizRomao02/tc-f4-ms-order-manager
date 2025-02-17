@@ -15,7 +15,7 @@ public interface OrderService {
 
   OrderDTO getOrderById(UUID id);
 
-  Boolean getOpenOrdersByCustomerId(String customerId);
+  Boolean getOpenOrdersByCustomerId(Long customerId);
 
   Orders getOneOrderById(UUID id);
 

@@ -1,5 +1,6 @@
 package com.java.fiap.ordermanager.domain.service.usecases.create;
 
+import com.java.fiap.ordermanager.domain.dto.AddressDTO;
 import com.java.fiap.ordermanager.domain.dto.ProductCatalogRequest;
 import com.java.fiap.ordermanager.domain.dto.form.OrderForm;
 import com.java.fiap.ordermanager.domain.dto.form.OrderItemForm;
@@ -28,6 +29,7 @@ public class CreateOrderUseCase implements UseCase<OrderForm, Orders> {
     validationInput(input);
 
     try {
+      AddressDTO address = msCostumerClient.getAddressCustomerById(input.customerId());
       ResponseEntity<Void> customerResponse = msCostumerClient.getCustomerById(input.customerId());
 
       if (!customerResponse.getStatusCode().is2xxSuccessful()) {

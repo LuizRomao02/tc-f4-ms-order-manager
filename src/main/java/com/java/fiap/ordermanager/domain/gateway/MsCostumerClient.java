@@ -6,12 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "tc-f4-ms-client")
+@FeignClient(name = "tc-f4-ms-customer")
 public interface MsCostumerClient {
 
-  @GetMapping("/ms_client/customers/{id}")
-  ResponseEntity<Void> getCustomerById(@PathVariable String id);
+  @GetMapping("/customers/{id}")
+  ResponseEntity<Void> getCustomerById(@PathVariable Long id);
 
-  @GetMapping("/ms_client/customers/address/{id}")
-  AddressDTO getAddressCustomerById(@PathVariable String id);
+  @GetMapping("/customers/{id}/address")
+  AddressDTO getAddressCustomerById(@PathVariable Long id);
 }

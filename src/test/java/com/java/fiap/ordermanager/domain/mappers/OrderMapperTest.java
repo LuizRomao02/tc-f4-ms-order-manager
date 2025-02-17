@@ -30,7 +30,7 @@ class OrderMapperTest {
     orderMapper = new OrderMapper();
     orderForm =
         new OrderForm(
-            "customer-id",
+            1L,
             true,
             OrderStatus.OPEN,
             List.of(new OrderItemForm(1L, 2)),
@@ -62,7 +62,7 @@ class OrderMapperTest {
   void testCalculateEstimatedDeliveryDate_ShouldReturnCorrectDate_ForStandardDelivery() {
     OrderForm orderForm =
         new OrderForm(
-            "customer-id",
+            1L,
             false,
             OrderStatus.OPEN,
             List.of(new OrderItemForm(1L, 2)),
@@ -88,7 +88,7 @@ class OrderMapperTest {
   void testCalculateEstimatedDeliveryDate_ShouldReturnCorrectDate_ForExpressDelivery() {
     OrderForm orderForm =
         new OrderForm(
-            "customer-id",
+            1L,
             true,
             OrderStatus.OPEN,
             List.of(new OrderItemForm(1L, 2)),
