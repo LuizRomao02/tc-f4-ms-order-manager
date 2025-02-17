@@ -20,6 +20,8 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class RabbitMQConfig {
 
+  private static final String SUFIX_DLQ = ".dlq";
+
   @Value("${spring.rabbitmq.queue.ms-logistics}")
   private String queueLogisticsOrder;
 
@@ -34,8 +36,6 @@ public class RabbitMQConfig {
 
   @Value("${spring.rabbitmq.password:}")
   private String password;
-
-  private final String SUFIX_DLQ = ".dlq";
 
   public void createQueueWithDLQ(RabbitAdmin rabbitAdmin, String queueName) {
     Queue queue =

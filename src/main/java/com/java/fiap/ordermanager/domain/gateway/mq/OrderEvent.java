@@ -1,6 +1,5 @@
 package com.java.fiap.ordermanager.domain.gateway.mq;
 
-import java.time.LocalDate;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,5 +17,5 @@ public class OrderEvent {
   private String address;
   private String houseNumber;
   private String postalCode;
-  private LocalDate estimatedDeliveryDate;
+  private String estimatedDeliveryDate;
 }

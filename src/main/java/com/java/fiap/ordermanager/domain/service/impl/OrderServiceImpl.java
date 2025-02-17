@@ -11,7 +11,6 @@ import com.java.fiap.ordermanager.domain.entity.enums.OrderStatus;
 import com.java.fiap.ordermanager.domain.entity.enums.PaymentStatus;
 import com.java.fiap.ordermanager.domain.exception.order.ServicesOrderException;
 import com.java.fiap.ordermanager.domain.gateway.MsCostumerClient;
-import com.java.fiap.ordermanager.domain.gateway.mq.GenericObjectMQ;
 import com.java.fiap.ordermanager.domain.gateway.mq.OrderEvent;
 import com.java.fiap.ordermanager.domain.mappers.ConverterToDTO;
 import com.java.fiap.ordermanager.domain.repository.OrderRepository;
@@ -19,6 +18,7 @@ import com.java.fiap.ordermanager.domain.service.OrderService;
 import com.java.fiap.ordermanager.domain.service.OrderTrackingService;
 import com.java.fiap.ordermanager.domain.service.usecases.create.CreateOrderUseCase;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -118,6 +118,7 @@ public class OrderServiceImpl implements OrderService {
 
     if (payment.getStatus() == PaymentStatus.PAID) {
       AddressDTO address = msCostumerClient.getAddressCustomerById(order.getCustomerId());
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
       OrderEvent eventMq =
           OrderEvent.builder()
@@ -126,7 +127,7 @@ public class OrderServiceImpl implements OrderService {
               .address(address.getStreet() + ", " + address.getNeighborhood())
               .houseNumber(address.getNumber())
               .postalCode(address.getZipCode())
-              .estimatedDeliveryDate(order.getEstimatedDeliveryDate())
+              .estimatedDeliveryDate(order.getEstimatedDeliveryDate().format(formatter))
               .build();
 
       sendToQueueLogistics(eventMq);
@@ -142,7 +143,6 @@ public class OrderServiceImpl implements OrderService {
   }
 
   private void sendToQueueLogistics(OrderEvent orderEvent) {
-    rabbitTemplate.convertAndSend(
-        queueLogisticsOrder, GenericObjectMQ.builder().object(orderEvent).build());
+    rabbitTemplate.convertAndSend(queueLogisticsOrder, orderEvent);
   }
 }
