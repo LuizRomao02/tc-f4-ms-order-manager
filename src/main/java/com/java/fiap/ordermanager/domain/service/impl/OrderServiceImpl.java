@@ -137,9 +137,12 @@ public class OrderServiceImpl implements OrderService {
   }
 
   public Orders getOneOrderById(UUID id) {
-    return orderRepository
-        .findById(id)
-        .orElseThrow(() -> new ServicesOrderException("Not Found Order"));
+    Orders order =
+        orderRepository
+            .findById(id)
+            .orElseThrow(() -> new ServicesOrderException("Not Found Order"));
+
+    return order;
   }
 
   private void sendToQueueLogistics(OrderEvent orderEvent) {

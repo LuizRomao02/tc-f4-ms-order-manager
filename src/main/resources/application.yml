@@ -1,12 +1,10 @@
-app:
-  name: tc-f4-ms-order-manager
-
 server:
   port: 8085
-  api-gateway: http://localhost:5555
   max-http-request-header-size: 30000
 
 spring:
+  application:
+    name: tc-f4-ms-order-manager
   cloud:
     config:
       enabled: false
@@ -77,6 +75,8 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka
+  instance:
+    instanceId: ${spring.application.name}
 
 api-geolocation:
   url: http://ip-api.com/json/

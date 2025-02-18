@@ -88,7 +88,7 @@ class OrderControllerTest {
             post("/order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
-                    "{\"customerId\":\"id-teste\",\"expressDelivery\":true,"
+                    "{\"customerId\":1,\"expressDelivery\":true,"
                         + "\"items\":[{\"productId\":1,\"quantity\":2}],"
                         + "\"status\":\"OPEN\",\"payment\":{\"amount\":100.0,\"status\":\"PENDING\"}, "
                         + "\"tracking\":{\"latitude\":0.0,\"longitude\":0.0}}"))
